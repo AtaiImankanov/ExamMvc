@@ -3,15 +3,17 @@ using System;
 using ExamMvc.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ExamMvc.Migrations
 {
     [DbContext(typeof(MobileContext))]
-    partial class MobileContextModelSnapshot : ModelSnapshot
+    [Migration("20220910101408_deletedBooksListFromUser")]
+    partial class deletedBooksListFromUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

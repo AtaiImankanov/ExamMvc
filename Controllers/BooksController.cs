@@ -37,6 +37,35 @@ namespace ExamMvc.Controllers
             return View(model);
         }
 
+
+        public  IActionResult Back(int BookId)
+        {
+            IQueryable<Book> Books = _context.Books;
+            List<Take> Takess = _context.Takes.ToList();
+            Take take = new Take();
+            Book book = new Book();
+            foreach (Book b in Books)
+            {
+                if(b.Id == BookId)
+                {
+                    b.Status = "In stock";
+                    book = b;             
+                    foreach (Take t in Takess)
+                    {
+                        if (t.BookId == book.Id)
+                        {
+                            take=t;
+                        }
+                    }
+                   
+                }
+            }
+            _context.Update(book);
+            _context.Takes.Remove(take);
+            _context.SaveChanges();
+            return Redirect("https://localhost:44300/Books");  
+        }
+
         // GET: Books/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -71,6 +100,7 @@ namespace ExamMvc.Controllers
             if (ModelState.IsValid)
             {
                 book.DateAdded = DateTime.Now;
+                book.Status = "In stock";
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

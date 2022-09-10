@@ -15,5 +15,6 @@ namespace ExamMvc.Models
         public string YearOfIssue { get; set; }
         public string Description { get; set; }
         public DateTime DateAdded { get; set; }
+        public string Status { get; set; }
     }
 }

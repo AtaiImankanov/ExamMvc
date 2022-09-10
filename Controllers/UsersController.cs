@@ -148,5 +148,16 @@ namespace ExamMvc.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+        public bool IsEx(string name)
+        {
+            foreach (var brand in _context.Users)
+            {
+                if (brand.Name == name)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

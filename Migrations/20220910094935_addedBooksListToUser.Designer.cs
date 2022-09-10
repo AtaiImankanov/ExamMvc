@@ -3,15 +3,17 @@ using System;
 using ExamMvc.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ExamMvc.Migrations
 {
     [DbContext(typeof(MobileContext))]
-    partial class MobileContextModelSnapshot : ModelSnapshot
+    [Migration("20220910094935_addedBooksListToUser")]
+    partial class addedBooksListToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,10 +49,15 @@ namespace ExamMvc.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("YearOfIssue")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Books");
                 });
@@ -103,6 +110,13 @@ namespace ExamMvc.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ExamMvc.Models.Book", b =>
+                {
+                    b.HasOne("ExamMvc.Models.User", null)
+                        .WithMany("Books")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("ExamMvc.Models.Take", b =>

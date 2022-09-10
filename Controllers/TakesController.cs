@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExamMvc.Models;
+using ExamMvc.ViewModels;
 
 namespace ExamMvc.Controllers
 {
@@ -46,10 +47,9 @@ namespace ExamMvc.Controllers
         }
 
         // GET: Takes/Create
-        public IActionResult Create()
+        public IActionResult Create(int BookId)
         {
-            ViewData["BookId"] = new SelectList(_context.Books, "Id", "AuthorName");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewBag.BookId=BookId; 
             return View();
         }
 
@@ -60,8 +60,26 @@ namespace ExamMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Email,UserId,BookId")] Take take)
         {
+            take.UserId = 0;
+            List<Book> books = _context.Books.ToList();
+            List<User> Users = _context.Users.ToList();
+            
             if (ModelState.IsValid)
             {
+                foreach (Book b in books)
+                {
+                    if (b.Id == take.BookId)
+                    {  
+                        b.Status = "Given";
+                    }
+                }
+                foreach (User u in Users)
+                {
+                    if (u.Email == take.Email)
+                    {
+                       take.UserId= u.Id;
+                    }
+                }
                 _context.Add(take);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -72,7 +90,40 @@ namespace ExamMvc.Controllers
         }
 
         // GET: Takes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Person()
+        {
+            return View();
+
+        }
+        [HttpPost]
+        public IActionResult Person(string Email)
+        {
+            List<Take>Takes= _context.Takes.ToList();
+
+            List<Book> Bookss = new List<Book>();
+            List<Book> Bookss1 = _context.Books.ToList();
+
+            
+            foreach (Take t in Takes)           
+            {
+                if(t.Email == Email)
+                {
+                    foreach(Book b in Bookss1)
+                    {
+                        if (t.BookId == b.Id)
+                        {
+                            Bookss.Add(b);
+                        }
+                    }
+                }
+            }
+            BookPageModel tvm = new BookPageModel
+            {
+                Books = Bookss
+            };
+            return View(tvm);
+        }
+            public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -142,7 +193,6 @@ namespace ExamMvc.Controllers
             {
                 return NotFound();
             }
-
             return View(take);
         }
 
@@ -160,6 +210,31 @@ namespace ExamMvc.Controllers
         private bool TakeExists(int id)
         {
             return _context.Takes.Any(e => e.Id == id);
+        }
+        public bool IsExistsEmailNMore3(string email)
+        {
+            IQueryable<User> users = _context.Users;
+            IQueryable<Take> Takes = _context.Takes;
+            int isThree = 0;
+            foreach (Take t in Takes)
+            {
+                if (t.Email == email)
+                {
+                    isThree++;
+                }
+            }
+            if (isThree >= 3)
+            {
+                return false;
+            }
+            foreach (User u in users)
+            {
+                if(u.Email == email)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

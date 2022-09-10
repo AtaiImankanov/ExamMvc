@@ -9,15 +9,17 @@
 </p>
     <div class ="row">
 @foreach (var item in Model.Books) {
-    <div class="card col-3" style="width: 18rem; margin:2;">
+    <div class="card col-3" style="width: 18rem;">
   <img src="@item.Pic" class="card-img-top" alt="image">
   <div class="card-body">
       <ul class="list-group">
   <li class="list-group-item">Name = @item.Name</li>
   <li class="list-group-item">Author =@item.AuthorName</li>
-  <li class="list-group-item">Status =status//</li>
+  <li class="list-group-item">Status =@item.Status</li>
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
-                <a asp-action="Create" asp-controller="Takes" asp-route-PhoneId="@item.Id">make an order</a>
+                @if(@item.Status=="In stock"){
+                <a asp-action="Create" asp-controller="Takes" asp-route-BookId="@item.Id">make an order</a>
+                }
 </ul>  
   </div>
 </div>     
