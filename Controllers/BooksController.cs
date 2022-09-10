@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExamMvc.Models;
+using ExamMvc.ViewModels;
+using ExamMvc.Enums;
 
 namespace ExamMvc.Controllers
 {
@@ -19,9 +21,20 @@ namespace ExamMvc.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Books.ToListAsync());
+        public async Task<IActionResult> Index(int page =1)
+        { 
+            IQueryable<Book> books = _context.Books;
+            books = books.OrderByDescending(x => x.DateAdded);
+            int pagesize = 8;
+            var count = await _context.Books.CountAsync();
+            var items = await books.Skip((page-1)*pagesize).Take(pagesize).ToListAsync(); 
+            var pvm= new PageViewModel(count,page,pagesize);
+            var model = new BookPageModel
+            {
+                Books = items,
+                PageViewModel = pvm
+            };
+            return View(model);
         }
 
         // GET: Books/Details/5
@@ -57,6 +70,7 @@ namespace ExamMvc.Controllers
         {
             if (ModelState.IsValid)
             {
+                book.DateAdded = DateTime.Now;
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
